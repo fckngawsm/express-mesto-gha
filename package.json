@@ -25,6 +25,7 @@
     "eslint-plugin-import": "^2.26.0"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mongoose": "^6.6.5"
   }
 }
