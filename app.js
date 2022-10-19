@@ -1,17 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('./routes/users');
+const routes = require('./routes');
 const app = express();
 // launch app
 const { PORT = 3000 } = process.env;
 // mongodb
 mongoose.connect('mongodb://localhost:27017/mestodb');
-// Пересмотреть вебинар
-
+// body-parser
 app.use(express.json());
-
-app.use(router);
-
+// use routes
+app.use(routes);
+// check npm run
 app.listen(PORT, () => {
   console.log(`приложение запущено на ${PORT} порту`);
 });
