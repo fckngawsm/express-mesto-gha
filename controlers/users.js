@@ -1,6 +1,7 @@
 const { mongoose } = require("mongoose");
+const user = require("../models/user.js");
 const Users = require("../models/user.js");
-
+// log all users
 const getUsers = (req, res) => {
   Users.find({})
     .then((user) => res.send(user))
@@ -13,6 +14,7 @@ const getUsers = (req, res) => {
         .send({ message: "На сервере случилас ошибка ", err });
     });
 };
+// log users by id
 const getUsersByID = (req, res) => {
   Users.findById(req.params.id)
     .orFail(new Error("Not found"))
@@ -25,12 +27,15 @@ const getUsersByID = (req, res) => {
           .status(400)
           .send({ message: "Друг с таким id не найден", err });
       }
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: "Некорректно указан id", err });
+      }
       return res
         .status(500)
         .send({ message: "На сервере случилас ошибка ", err });
     });
 };
-
+// create users
 const postUsers = (req, res) => {
   Users.create(req.body)
     .then((user) => {
@@ -45,9 +50,39 @@ const postUsers = (req, res) => {
         .send({ message: "На сервере случилас ошибка ", err });
     });
 };
+// update profile
+const updateUsers = (req, res) => {
+  const { name, about } = req.body;
+  const id = '635056510deb5bf198ecb622';
 
+  Users.findByIdAndUpdate(id, { name, about }, { new: true})
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: err._message });
+      }
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+    });
+};
+
+// update avatar
+const updateUsersAvatar = (req, res) => {
+  const { avatar } = req.body;
+  Users.findByIdAndUpdate(req.user._id, { avatar })
+    .then((data) => {
+      return res.send({ data });
+    })
+    .catch((err) => {
+      if (err.name === names.Validation || err.name === names.Cast) {
+        throw new BadRequestError();
+      }
+      next(err);
+    });
+};
 module.exports = {
   getUsers,
   postUsers,
   getUsersByID,
+  updateUsers,
+  updateUsersAvatar,
 };

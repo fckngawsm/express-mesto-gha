@@ -1,9 +1,15 @@
 const router = require("express").Router();
 
-const { getUsers } = require("../controlers/users.js");
-const { postUsers } = require("../controlers/users.js");
-const { getUsersByID } = require("../controlers/users.js");
+const {
+  getUsers,
+  postUsers,
+  getUsersByID,
+  updateUsers,
+  updateUsersAvatar,
+} = require("../controlers/users.js");
 
+router.patch("/me/avatar", updateUsersAvatar);
+router.patch("/me", updateUsers);
 router.get("/", getUsers);
 router.get("/:id", getUsersByID);
 router.post("/", postUsers);
