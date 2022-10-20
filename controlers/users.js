@@ -53,30 +53,30 @@ const postUsers = (req, res) => {
 // update profile
 const updateUsers = (req, res) => {
   const { name, about } = req.body;
-  const id = '635056510deb5bf198ecb622';
+  const id = req.user._id;
 
-  Users.findByIdAndUpdate(id, { name, about }, { new: true})
+  Users.findByIdAndUpdate(id, { name, about }, { new: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === "ValidationError") {
         return res.status(400).send({ message: err._message });
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
-
 // update avatar
 const updateUsersAvatar = (req, res) => {
   const { avatar } = req.body;
-  Users.findByIdAndUpdate(req.user._id, { avatar })
-    .then((data) => {
-      return res.send({ data });
+  const id = req.user._id;
+  Users.findByIdAndUpdate(id, { avatar }, { new: true })
+    .then((user) => {
+      return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === names.Validation || err.name === names.Cast) {
-        throw new BadRequestError();
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: err._message });
       }
-      next(err);
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
 module.exports = {

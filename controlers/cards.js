@@ -31,23 +31,72 @@ const postCards = (req, res) => {
 // delete card by id
 const deleteCards = (req, res) => {
   Cards.findByIdAndRemove(req.params.id)
-  .then((card) => {
-    return res
-      .status(200)
-      .send({ message: `Карточка с id ${(req.params.id)} удалена` });
-  })
-  .catch((err) => {
-    if (err instanceof mongoose.Error.CastError) {
-      return res.status(400).send({ message: "Некорректно указан id", err });
-    }
-    return res
-      .status(500)
-      .send({ message: "На сервере случилас ошибка ", err });
-  });
+    .then((card) => {
+      return res
+        .status(200)
+        .send({ message: `Карточка с id ${req.params.id} удалена` });
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: "Некорректно указан id", err });
+      }
+      return res
+        .status(500)
+        .send({ message: "На сервере случилас ошибка ", err });
+    });
 };
-
+// like card
+const likeCard = (req, res) => {
+  Cards.findByIdAndUpdate(
+    req.params.id,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .then((card) => {
+      if (card === null) {
+        return res
+          .status(404)
+          .send({ message: `Нет карточки с id ${req.params.id}` });
+      }
+      return res.send({ data: card });
+    })
+    .catch((err) => {
+      if (!err.messageFormat) {
+        return res
+          .status(404)
+          .send({ message: `Нет карточки с id ${req.params.id}` });
+      }
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
+    });
+};
+// dislike card
+const dislikeCard = (req, res) => {
+  Cards.findByIdAndUpdate(
+    req.params.id,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .then((card) => {
+      if (card === null) {
+        return res
+          .status(404)
+          .send({ message: `Нет карточки с id ${req.params.id}` });
+      }
+      return res.send({ data: card });
+    })
+    .catch((err) => {
+      if (!err.messageFormat) {
+        return res
+          .status(404)
+          .send({ message: `Нет карточки с id ${req.params.id}` });
+      }
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
+    });
+};
 module.exports = {
   getCards,
   postCards,
   deleteCards,
+  likeCard,
+  dislikeCard,
 };
