@@ -24,11 +24,8 @@ const getUsersByID = (req, res) => {
     .catch((err) => {
       if ((err.message = "Not found")) {
         return res
-          .status(404)
+          .status(400)
           .send({ message: "Друг с таким id не найден", err });
-      }
-      if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: "Некорректно указан id", err });
       }
       return res
         .status(500)
@@ -38,8 +35,8 @@ const getUsersByID = (req, res) => {
 // create users
 const postUsers = (req, res) => {
   Users.create(req.body)
-    .then((user) => {
-      res.status(201).send(user);
+    .then((card) => {
+      return res.status(201).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
