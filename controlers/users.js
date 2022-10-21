@@ -22,13 +22,13 @@ const getUsersByID = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.message = "Not found") {
-        return res
-          .status(404)
-          .send({ message: "Друг с таким id не найден", err });
-      }
       if (err instanceof mongoose.Error.CastError) {
         return res.status(400).send({ message: "Некорректно указан id", err });
+      }
+      if (err.message = "Not found") {
+        return res
+          .status(400)
+          .send({ message: "Друг с таким id не найден", err });
       }
       return res
         .status(500)
@@ -45,7 +45,7 @@ const postUsers = (req, res) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return res.status(400).send({ message: "Ошибка валидации", err });
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
 // update profile
@@ -53,13 +53,17 @@ const updateUsers = (req, res) => {
   const { name, about } = req.body;
   const id = req.user._id;
 
-  Users.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
+  Users.findByIdAndUpdate(
+    id,
+    { name, about },
+    { new: true, runValidators: true }
+  )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return res.status(400).send({ message: "Ошибка валидации", err });
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
 // update avatar

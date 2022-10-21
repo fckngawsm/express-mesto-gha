@@ -35,13 +35,13 @@ const deleteCards = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: "Некорректно указан id", err });
+      }
       if ((err.message = "Not found")) {
         return res
           .status(404)
           .send({ message: "Карточка с таким id не найдена", err });
-      }
-      if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: "Некорректно указан id", err });
       }
       return res
         .status(500)
@@ -60,13 +60,13 @@ const likeCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err.message = "Not found") {
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: "Некорректно указан id", err });
+      }
+      if ((err.message = "Not found")) {
         return res
           .status(404)
           .send({ message: "Карточка с таким id не найдена", err });
-      }
-      if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: "Некорректно указан id", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
@@ -83,10 +83,13 @@ const dislikeCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err.message = "Not found") {
+      if ((err.message = "Not found")) {
         return res
           .status(404)
           .send({ message: "карточка с таким id не найдена", err });
+      }
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: "Некорректно указан id", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
