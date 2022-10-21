@@ -24,7 +24,7 @@ const getUsersByID = (req, res) => {
     .catch((err) => {
       if ((err.message = "Not found")) {
         return res
-          .status(400)
+          .status(404)
           .send({ message: "Друг с таким id не найден", err });
       }
       return res
