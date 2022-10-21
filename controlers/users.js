@@ -24,7 +24,7 @@ const getUsersByID = (req, res) => {
     .catch((err) => {
       if ((err.message = "Not found")) {
         return res
-          .status(400)
+          .status(404)
           .send({ message: "Друг с таким id не найден", err });
       }
       return res
@@ -34,17 +34,15 @@ const getUsersByID = (req, res) => {
 };
 // create users
 const postUsers = (req, res) => {
-  Users.create(req.body)
-    .then((card) => {
-      return res.send(card);
-    })
+  const { name, about, avatar } = req.body;
+
+  Users.create({ name, about, avatar })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return res.status(400).send({ message: "Ошибка валидации", err });
       }
-      return res
-        .status(500)
-        .send({ message: "На сервере случилась ошибка ", err });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 // update profile
@@ -54,7 +52,7 @@ const updateUsers = (req, res) => {
 
   Users.findByIdAndUpdate(id, { name, about }, { new: true })
     .then((user) => {
-      res.status(201).send({data : user});
+      res.status(200).send({data : user});
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {

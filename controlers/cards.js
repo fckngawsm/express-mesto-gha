@@ -15,30 +15,27 @@ const getCards = (req, res) => {
 };
 // create card
 const postCards = (req, res) => {
-  Cards.create(req.body)
-    .then((card) => {
-       res.status(201).send(card);
-    })
+  const id = req.user._id;
+  const { name, link } = req.body;
+
+  Cards.create({ name, link, owner: id })
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return res.status(400).send({ message: "Ошибка валидации", err });
       }
-      return res
-        .status(500)
-        .send({ message: "На сервере случилась ошибка ", err });
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
 // delete card by id
 const deleteCards = (req, res) => {
   Cards.findByIdAndRemove(req.params.id)
     .then((card) => {
-      return res
-        .status(200)
-        .send({ message: `Карточка с id ${req.params.id} удалена` });
+      return res.send({ data: card });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: "Некорректно указан id", err });
+        return res.status(404).send({ message: "Некорректно указан id", err });
       }
       return res
         .status(500)
@@ -54,12 +51,12 @@ const likeCard = (req, res) => {
   )
     .orFail(new Error("Not found"))
     .then((card) => {
-      res.status(200).send({ data: card });
+      return res.send({ data: card });
     })
     .catch((err) => {
       if ((err.message = "Not found")) {
         return res
-          .status(404)
+          .status(400)
           .send({ message: "Карточка с таким id не найдена", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
@@ -74,12 +71,12 @@ const dislikeCard = (req, res) => {
   )
     .orFail(new Error("Not found"))
     .then((card) => {
-      res.status(200).send({ data: card });
+      return res.send({ data: card });
     })
     .catch((err) => {
-      if (err.message = "Not found") {
+      if ((err.message = "Not found")) {
         return res
-          .status(400)
+          .status(404)
           .send({ message: "карточка с таким id не найдена", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
