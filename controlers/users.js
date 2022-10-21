@@ -17,19 +17,13 @@ const getUsers = (req, res) => {
 // log users by id
 const getUsersByID = (req, res) => {
   Users.findById(req.params.id)
-    .orFail(new Error("Not found"))
     .then((user) => {
-      res.send(user);
+      if (user === null) {
+        return res.status(404).send({ message: `Нет пользователя с id ${req.params.id}` });
+      }
+      return res.send({ data: user });;
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: "Некорректно указан id", err });
-      }
-      if (err.message = "Not found") {
-        return res
-          .status(400)
-          .send({ message: "Друг с таким id не найден", err });
-      }
       return res
         .status(500)
         .send({ message: "На сервере случилас ошибка ", err });
