@@ -54,18 +54,25 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-  .then((card) => {
-    if (card === null) {
-      return res.status(404).send({ message: `Нет карточки с id ${req.params.id}` });
-    }
-    return res.send({ data: card });
-  })
-  .catch((err) => {
-    if (!err.messageFormat) {
-      return res.status(404).send({ message: `Нет карточки с id ${req.params.id}` });
-    }
-    return res.status(500).send({ message: 'На сервере произошла ошибка' });
-  });
+    .then((card) => {
+      if (card === null) {
+        return res
+          .status(404)
+          .send({ message: `Нет карточки с id ${req.params.id}` });
+      }
+      return res.send({ data: card });
+    })
+    .catch((err) => {
+      if (!err.messageFormat) {
+        return res
+          .status(404)
+          .send({ message: `Нет карточки с id ${req.params.id}` });
+      }
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: "Некорректно указан id", err });
+      }
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
+    });
 };
 // dislike card
 const dislikeCard = (req, res) => {
@@ -76,13 +83,20 @@ const dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (card === null) {
-        return res.status(404).send({ message: `Нет карточки с id ${req.params.id}` });
+        return res
+          .status(404)
+          .send({ message: `Нет карточки с id ${req.params.id}` });
       }
       return res.send({ data: card });
     })
     .catch((err) => {
       if (!err.messageFormat) {
-        return res.status(404).send({ message: `Нет карточки с id ${req.params.id}` });
+        return res
+          .status(404)
+          .send({ message: `Нет карточки с id ${req.params.id}` });
+      }
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: "Некорректно указан id", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
