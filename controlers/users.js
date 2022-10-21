@@ -17,12 +17,11 @@ const getUsers = (req, res) => {
 // log users by id
 const getUsersByID = (req, res) => {
   Users.findById(req.params.id)
-    .orFail(new Error("Not found"))
     .then((user) => {
       if (user === null) {
         return res
           .status(404)
-          .send({ message: `Нет пользователя с id ${req.params.id}` });
+          .send({ message: `Нет пользователя с id ${req.params.userId}` });
       }
       return res.send({ data: user });
     })
@@ -30,16 +29,9 @@ const getUsersByID = (req, res) => {
       if (!err.messageFormat) {
         return res
           .status(404)
-          .send({ message: `Нет карточки с id ${req.params.cardId}` });
+          .send({ message: `Нет пользователя с id ${req.params.userId}` });
       }
-      if ((err.message = "Not found")) {
-        return res
-          .status(400)
-          .send({ message: "Друг с таким id не найден", err });
-      }
-      return res
-        .status(500)
-        .send({ message: "На сервере случилас ошибка ", err });
+      return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
 };
 // create users
