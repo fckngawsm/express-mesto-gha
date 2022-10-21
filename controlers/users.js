@@ -22,7 +22,7 @@ const getUsersByID = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if ((err.message = "Not found")) {
+      if (err.message = "Not found") {
         return res
           .status(404)
           .send({ message: "Друг с таким id не найден", err });

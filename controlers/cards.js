@@ -60,7 +60,7 @@ const likeCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if ((err.message = "Not found")) {
+      if (err.message = "Not found") {
         return res
           .status(404)
           .send({ message: "Карточка с таким id не найдена", err });
@@ -83,7 +83,7 @@ const dislikeCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if ((err.message = "Not found")) {
+      if (err.message = "Not found") {
         return res
           .status(404)
           .send({ message: "карточка с таким id не найдена", err });
