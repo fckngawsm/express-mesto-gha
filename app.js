@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 // use routes
 app.use(routes);
-//
+//wrong path
 app.use('/*', (req, res) => {
   res.status(404).send({message : "Ничего не нашлось"})
 });
