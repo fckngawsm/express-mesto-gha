@@ -19,19 +19,19 @@ const getUsersByID = (req, res) => {
   Users.findById(req.params.id)
     .then((user) => {
       if (user === null) {
-        return res
-          .status(404)
-          .send({ message: `Нет пользователя с id ${req.params.userId}` });
+        return res.status(404).send({ message: `Нет пользователя с id ${req.params.id}` });
       }
-      return res.send({ data: user });
+      return res.send({ data: user });;
     })
     .catch((err) => {
-      if (!err.messageFormat) {
+      if (err.message = "Not found") {
         return res
-          .status(404)
-          .send({ message: `Нет пользователя с id ${req.params.userId}` });
+          .status(400)
+          .send({ message: "Друг с таким id не найден", err });
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      return res
+        .status(500)
+        .send({ message: "На сервере случилас ошибка ", err });
     });
 };
 // create users
