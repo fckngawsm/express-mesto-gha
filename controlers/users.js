@@ -27,6 +27,9 @@ const getUsersByID = (req, res) => {
           .status(404)
           .send({ message: "Друг с таким id не найден", err });
       }
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: "Некорректно указан id", err });
+      }
       return res
         .status(500)
         .send({ message: "На сервере случилас ошибка ", err });
