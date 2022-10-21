@@ -17,7 +17,7 @@ const getCards = (req, res) => {
 const postCards = (req, res) => {
   Cards.create(req.body)
     .then((card) => {
-      res.status(201).send(card);
+      return res.status(201).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -58,12 +58,12 @@ const likeCard = (req, res) => {
           .status(404)
           .send({ message: `Нет карточки с id ${req.params.id}` });
       }
-      return res.send({ data: card });
+      return res.status(201).send({ data: card });
     })
     .catch((err) => {
       if (!err.messageFormat) {
         return res
-          .status(404)
+          .status(400)
           .send({ message: `Нет карточки с id ${req.params.id}` });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
@@ -76,19 +76,20 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
+    .orFail(new Error("Not found"))
     .then((card) => {
       if (card === null) {
         return res
           .status(404)
           .send({ message: `Нет карточки с id ${req.params.id}` });
       }
-      return res.send({ data: card });
+      return res.status(200).send({ data: card });
     })
     .catch((err) => {
-      if (!err.messageFormat) {
+      if ((err.message = "Not found")) {
         return res
           .status(404)
-          .send({ message: `Нет карточки с id ${req.params.id}` });
+          .send({ message: "карточка с таким id не найдена", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
