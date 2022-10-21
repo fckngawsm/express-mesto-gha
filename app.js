@@ -17,6 +17,10 @@ app.use((req, res, next) => {
 app.use(express.json());
 // use routes
 app.use(routes);
+//
+app.use('/*', (req, res) => {
+  res.status(404).send({message : "Ничего не нашлось"})
+});
 // check npm run
 app.listen(PORT, () => {
   console.log(`приложение запущено на ${PORT} порту`);
