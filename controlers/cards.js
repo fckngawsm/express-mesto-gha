@@ -54,16 +54,12 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
+  .orFail(new Error('Not found'))
     .then((card) => {
-      if (card === null) {
-        return res
-          .status(404)
-          .send({ message: `Нет карточки с id ${req.params.id}` });
-      }
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (!err.messageFormat) {
+      if (err.message = 'Not found') {
         return res
           .status(404)
           .send({ message: `Нет карточки с id ${req.params.id}` });
@@ -83,11 +79,6 @@ const dislikeCard = (req, res) => {
   )
   .orFail(new Error('Not found'))
     .then((card) => {
-      if (card === null) {
-        return res
-          .status(404)
-          .send({ message: `Нет карточки с id ${req.params.id}` });
-      }
       return res.send({ data: card });
     })
     .catch((err) => {
