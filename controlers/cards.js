@@ -77,7 +77,7 @@ const dislikeCard = (req, res) => {
       return res.status(200).send({ data: card });
     })
     .catch((err) => {
-      if ((err.message = "Not found")) {
+      if (err.message = "Not found") {
         return res
           .status(404)
           .send({ message: "карточка с таким id не найдена", err });
