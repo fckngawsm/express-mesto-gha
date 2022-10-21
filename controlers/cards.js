@@ -17,7 +17,7 @@ const getCards = (req, res) => {
 const postCards = (req, res) => {
   Cards.create(req.body)
     .then((card) => {
-      return res.status(201).send(card);
+       res.status(201).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -54,12 +54,12 @@ const likeCard = (req, res) => {
   )
     .orFail(new Error("Not found"))
     .then((card) => {
-      return res.status(200).send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if ((err.message = "Not found")) {
         return res
-          .status(400)
+          .status(404)
           .send({ message: "Карточка с таким id не найдена", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
@@ -74,12 +74,12 @@ const dislikeCard = (req, res) => {
   )
     .orFail(new Error("Not found"))
     .then((card) => {
-      return res.status(200).send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.message = "Not found") {
         return res
-          .status(404)
+          .status(400)
           .send({ message: "карточка с таким id не найдена", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
