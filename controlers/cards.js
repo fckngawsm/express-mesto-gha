@@ -33,9 +33,15 @@ const deleteCards = (req, res) => {
     .then((card) => {
       return res.send({ data: card });
     })
+    .orFail(new Error("Not found"))
     .catch((err) => {
+      if ((err.message = "Not found")) {
+        return res
+          .status(404)
+          .send({ message: "Карточка с таким id не найдена", err });
+      }
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(404).send({ message: "Некорректно указан id", err });
+        return res.status(400).send({ message: "Некорректно указан id", err });
       }
       return res
         .status(500)
@@ -56,7 +62,7 @@ const likeCard = (req, res) => {
     .catch((err) => {
       if ((err.message = "Not found")) {
         return res
-          .status(400)
+          .status(404)
           .send({ message: "Карточка с таким id не найдена", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
@@ -76,7 +82,7 @@ const dislikeCard = (req, res) => {
     .catch((err) => {
       if ((err.message = "Not found")) {
         return res
-          .status(404)
+          .status(400)
           .send({ message: "карточка с таким id не найдена", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });

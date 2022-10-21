@@ -24,7 +24,7 @@ const getUsersByID = (req, res) => {
     .catch((err) => {
       if ((err.message = "Not found")) {
         return res
-          .status(404)
+          .status(400)
           .send({ message: "Друг с таким id не найден", err });
       }
       return res
@@ -50,17 +50,13 @@ const updateUsers = (req, res) => {
   const { name, about } = req.body;
   const id = req.user._id;
 
-  Users.findByIdAndUpdate(id, { name, about }, { new: true })
-    .then((user) => {
-      res.status(200).send({data : user});
-    })
+  Users.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return res.status(400).send({ message: "Ошибка валидации", err });
       }
-      return res
-        .status(500)
-        .send({ message: "На сервере случилась ошибка ", err });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 // update avatar
@@ -72,8 +68,8 @@ const updateUsersAvatar = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err._message });
+      if (err instanceof mongoose.Error.ValidationError) {
+        return res.status(400).send({ message: "Ошибка валидации", err });
       }
       return res.status(500).send({ message: "На сервере произошла ошибка" });
     });
