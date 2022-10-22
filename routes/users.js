@@ -6,7 +6,7 @@ const {
   getUsersByID,
   updateUsers,
   updateUsersAvatar,
-} = require('../controlers/users.js');
+} = require('../controlers/users');
 
 router.patch('/me/avatar', updateUsersAvatar);
 router.patch('/me', updateUsers);
