@@ -1,37 +1,32 @@
-const { mongoose } = require("mongoose");
-const user = require("../models/user.js");
-const Users = require("../models/user.js");
+const { mongoose } = require('mongoose');
+const Users = require('../models/user');
+const { HTTPResponSestatusCodes } = require('../utils/constants');
 // log all users
 const getUsers = (req, res) => {
   Users.find({})
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: "Ошибка валидации", err });
-      }
-      return res
-        .status(500)
-        .send({ message: "На сервере случилас ошибка ", err });
-    });
+    .catch(() => res
+      .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
+      .send({ message: 'На сервере случилас ошибка ' }));
 };
 // log users by id
 const getUsersByID = (req, res) => {
   Users.findById(req.params.id)
     .then((user) => {
       if (user === null) {
-        return res.status(404).send({ message: `Нет пользователя с id ${req.params.id}` });
+        return res.status(HTTPResponSestatusCodes.NOT_FOUND).send({ message: `Нет пользователя с id ${req.params.id}` });
       }
-      return res.send({ data: user });;
+      return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.message = "Not found") {
+      if (err instanceof mongoose.Error.CastError) {
         return res
-          .status(400)
-          .send({ message: "Друг с таким id не найден", err });
+          .status(HTTPResponSestatusCodes.NOT_FOUND)
+          .send({ message: 'Передан некорректный id' });
       }
       return res
-        .status(500)
-        .send({ message: "На сервере случилас ошибка ", err });
+        .status(HTTPResponSestatusCodes.NOT_FOUND)
+        .send({ message: 'На сервере случилас ошибка ' });
     });
 };
 // create users
@@ -42,9 +37,9 @@ const postUsers = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: "Ошибка валидации", err });
+        return res.status(HTTPResponSestatusCodes.BAD_REQUEST).send({ message: 'Ошибка валидации' });
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      return res.status(HTTPResponSestatusCodes.INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
     });
 };
 // update profile
@@ -55,14 +50,14 @@ const updateUsers = (req, res) => {
   Users.findByIdAndUpdate(
     id,
     { name, about },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: "Ошибка валидации", err });
+        return res.status(HTTPResponSestatusCodes.BAD_REQUEST).send({ message: 'Ошибка валидации' });
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      return res.status(HTTPResponSestatusCodes.INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
     });
 };
 // update avatar
@@ -75,9 +70,9 @@ const updateUsersAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: "Ошибка валидации", err });
+        return res.status(HTTPResponSestatusCodes.BAD_REQUEST).send({ message: 'Ошибка валидации' });
       }
-      return res.status(500).send({ message: "На сервере произошла ошибка" });
+      return res.status(HTTPResponSestatusCodes.INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
     });
 };
 module.exports = {
