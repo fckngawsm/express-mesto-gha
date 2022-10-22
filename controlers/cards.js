@@ -41,7 +41,7 @@ const deleteCards = (req, res) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         return res
-          .status(HTTPResponSestatusCodes.NOT_FOUND)
+          .status(HTTPResponSestatusCodes.BAD_REQUEST)
           .send({ message: 'Некорректно указан id' });
       }
       return res
