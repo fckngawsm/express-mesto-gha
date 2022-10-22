@@ -21,11 +21,11 @@ const getUsersByID = (req, res) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         return res
-          .status(HTTPResponSestatusCodes.NOT_FOUND)
+          .status(HTTPResponSestatusCodes.BAD_REQUEST)
           .send({ message: 'Передан некорректный id' });
       }
       return res
-        .status(HTTPResponSestatusCodes.NOT_FOUND)
+        .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
         .send({ message: 'На сервере случилас ошибка ' });
     });
 };
