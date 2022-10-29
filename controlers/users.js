@@ -1,20 +1,25 @@
-const { mongoose } = require('mongoose');
-const Users = require('../models/user');
-const { HTTPResponSestatusCodes } = require('../utils/constants');
+const { mongoose } = require("mongoose");
+const bcrypt = require("bcryptjs");
+const Users = require("../models/user");
+const { HTTPResponSestatusCodes } = require("../utils/constants");
 // log all users
 const getUsers = (req, res) => {
   Users.find({})
     .then((user) => res.send(user))
-    .catch(() => res
-      .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
-      .send({ message: 'На сервере случилас ошибка ' }));
+    .catch(() =>
+      res
+        .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
+        .send({ message: "На сервере случилас ошибка " })
+    );
 };
 // log users by id
 const getUsersByID = (req, res) => {
   Users.findById(req.params.id)
     .then((user) => {
       if (user === null) {
-        return res.status(HTTPResponSestatusCodes.NOT_FOUND).send({ message: `Нет пользователя с id ${req.params.id}` });
+        return res
+          .status(HTTPResponSestatusCodes.NOT_FOUND)
+          .send({ message: `Нет пользователя с id ${req.params.id}` });
       }
       return res.send({ data: user });
     })
@@ -22,24 +27,31 @@ const getUsersByID = (req, res) => {
       if (err instanceof mongoose.Error.CastError) {
         return res
           .status(HTTPResponSestatusCodes.BAD_REQUEST)
-          .send({ message: 'Передан некорректный id' });
+          .send({ message: "Передан некорректный id" });
       }
       return res
         .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
-        .send({ message: 'На сервере случилас ошибка ' });
+        .send({ message: "На сервере случилас ошибка " });
     });
 };
 // create users
 const postUsers = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const { name, about, avatar, password, email } = req.body;
 
-  Users.create({ name, about, avatar })
+  bcrypt.hash(password, 10)
+  .then((hash) => Users.create({
+    name, about, avatar, email, password: hash,
+  }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(HTTPResponSestatusCodes.BAD_REQUEST).send({ message: 'Ошибка валидации' });
+        return res
+          .status(HTTPResponSestatusCodes.BAD_REQUEST)
+          .send({ message: "Ошибка валидации" });
       }
-      return res.status(HTTPResponSestatusCodes.INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
+      return res
+        .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
+        .send({ message: "На сервере произошла ошибка" });
     });
 };
 // update profile
@@ -50,14 +62,18 @@ const updateUsers = (req, res) => {
   Users.findByIdAndUpdate(
     id,
     { name, about },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(HTTPResponSestatusCodes.BAD_REQUEST).send({ message: 'Ошибка валидации' });
+        return res
+          .status(HTTPResponSestatusCodes.BAD_REQUEST)
+          .send({ message: "Ошибка валидации" });
       }
-      return res.status(HTTPResponSestatusCodes.INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
+      return res
+        .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
+        .send({ message: "На сервере произошла ошибка" });
     });
 };
 // update avatar
@@ -70,9 +86,13 @@ const updateUsersAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(HTTPResponSestatusCodes.BAD_REQUEST).send({ message: 'Ошибка валидации' });
+        return res
+          .status(HTTPResponSestatusCodes.BAD_REQUEST)
+          .send({ message: "Ошибка валидации" });
       }
-      return res.status(HTTPResponSestatusCodes.INTERNAL_SERVER).send({ message: 'На сервере произошла ошибка' });
+      return res
+        .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
+        .send({ message: "На сервере произошла ошибка" });
     });
 };
 module.exports = {
