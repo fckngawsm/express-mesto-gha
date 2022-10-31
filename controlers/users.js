@@ -1,5 +1,6 @@
 const { mongoose } = require("mongoose");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const Users = require("../models/user");
 const { HTTPResponSestatusCodes } = require("../utils/constants");
 // log all users
@@ -12,7 +13,7 @@ const getUsers = (req, res) => {
         .send({ message: "На сервере случилас ошибка " })
     );
 };
-// log users by id
+// log current users
 const getUsersByID = (req, res) => {
   Users.findById(req.params.id)
     .then((user) => {
@@ -34,14 +35,44 @@ const getUsersByID = (req, res) => {
         .send({ message: "На сервере случилас ошибка " });
     });
 };
+// curr
+// log current users
+const getCurrentUser = (req, res) => {
+  Users.findById(req.params.id)
+    .then((user) => {
+      if (!user) {
+        return res
+          .status(HTTPResponSestatusCodes.NOT_FOUND)
+          .send({ message: `Нет пользователя с id ${req.params.id}` });
+      }
+      return res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        return res
+          .status(HTTPResponSestatusCodes.BAD_REQUEST)
+          .send({ message: "Передан некорректный id" });
+      }
+      return res
+        .status(HTTPResponSestatusCodes.INTERNAL_SERVER)
+        .send({ message: "На сервере случилась ошибка " });
+    });
+};
 // create users
-const postUsers = (req, res) => {
+const createUser = (req, res) => {
   const { name, about, avatar, password, email } = req.body;
-
-  bcrypt.hash(password, 10)
-  .then((hash) => Users.create({
-    name, about, avatar, email, password: hash,
-  }))
+  console.log('u create user')
+  bcrypt
+    .hash(password, 10)
+    .then((hash) =>
+      Users.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+    )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -95,10 +126,29 @@ const updateUsersAvatar = (req, res) => {
         .send({ message: "На сервере произошла ошибка" });
     });
 };
+// login user
+const loginUser = (req, res) => {
+  const { email, password } = req.body;
+
+  return Users.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: "635056510deb5bf198ecb622" },
+        "some-secret-key",
+        { expiresIn: "7d" }
+      );
+      res.send({ token });
+    })
+    .catch((err) => {
+      res.status(HTTPResponSestatusCodes.NOT_FOUND).send({ message: err.message });
+    });
+};
 module.exports = {
   getUsers,
-  postUsers,
+  createUser,
   getUsersByID,
   updateUsers,
   updateUsersAvatar,
+  loginUser,
+  getCurrentUser
 };
