@@ -8,20 +8,13 @@ const app = express();
 const { PORT = 3000 } = process.env;
 // mongodb
 mongoose.connect("mongodb://localhost:27017/mestodb");
-// middleware
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: "635056510deb5bf198ecb622",
-//   };
-//   next();
-// });
 // body-parser
 app.use(express.json());
 // use routes
 app.use(routes);
 //
-app.post("/signin", loginUser);
 app.post("/signup", createUser);
+app.post("/signin", loginUser);
 app.use(auth);
 // wrong path
 app.use("/*", (req, res) => {

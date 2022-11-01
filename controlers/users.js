@@ -129,11 +129,11 @@ const updateUsersAvatar = (req, res) => {
 // login user
 const loginUser = (req, res) => {
   const { email, password } = req.body;
-
+  console.log(req.body)
   return Users.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
-        { _id: "635056510deb5bf198ecb622" },
+        { id: user.id },
         "some-secret-key",
         { expiresIn: "7d" }
       );
