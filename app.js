@@ -10,10 +10,10 @@ const {celebrateSignin , celebrateSignup } = require("./utils/celebrate");
 const { PORT = 3000 } = process.env;
 // mongodb
 mongoose.connect("mongodb://localhost:27017/mestodb");
-// body-parser
-app.use(express.json());
 // cookie
 app.use(cookieParser());
+// body-parser
+app.use(express.json());
 // use routes
 app.use(routes);
 // create & login
