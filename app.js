@@ -1,21 +1,32 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const routes = require("./routes");
-const {loginUser , createUser} = require("./controlers/users");
-const auth = require("./middlewares/auth")
 const app = express();
+const cookieParser = require('cookie-parser');
+const { loginUser , createUser} = require("./controlers/users");
+// celebrate
+const {celebrateSignin , celebrateSignup } = require("./utils/celebrate");
 // launch app
 const { PORT = 3000 } = process.env;
 // mongodb
 mongoose.connect("mongodb://localhost:27017/mestodb");
 // body-parser
 app.use(express.json());
+// cookie
+app.use(cookieParser());
 // use routes
 app.use(routes);
-//
-app.post("/signup", createUser);
-app.post("/signin", loginUser);
-app.use(auth);
+// create & login
+app.post(
+  "/signup",
+  celebrateSignup,
+  createUser
+);
+app.post(
+  "/signin",
+  celebrateSignin,
+  loginUser,
+);
 // wrong path
 app.use("/*", (req, res) => {
   res.status(404).send({ message: "Ничего не нашлось" });
@@ -24,6 +35,5 @@ app.use("/*", (req, res) => {
 app.listen(PORT, () => {
   console.log(`приложение запущено на ${PORT} порту`);
 });
-// сделать валидацию joi ...
-// до конца понять как должен работать вход
-// сделать обработку ошибок в отдельной папке
+// сделать все тоже самое для cards
+// пройти все тест

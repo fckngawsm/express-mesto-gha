@@ -1,4 +1,5 @@
 const { mongoose } = require('mongoose');
+const BadRequestError = require('../errors/bad-request-err');
 const Cards = require('../models/card');
 const { HTTPResponSestatusCodes } = require('../utils/constants');
 // log all cards
@@ -31,6 +32,9 @@ const postCards = (req, res) => {
 const deleteCards = (req, res) => {
   Cards.findByIdAndRemove(req.params.id)
     .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        throw new BadRequestError('Недостаточно прав для выполнения операции');
+      }
       if (card === null) {
         return res
           .status(HTTPResponSestatusCodes.NOT_FOUND)
