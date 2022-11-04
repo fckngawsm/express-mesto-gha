@@ -6,14 +6,14 @@ const cookieParser = require('cookie-parser');
 const { loginUser , createUser} = require("./controlers/users");
 // celebrate
 const {celebrateSignin , celebrateSignup } = require("./utils/celebrate");
+// body-parser
+app.use(express.json());
+// cookie
+app.use(cookieParser());
 // launch app
 const { PORT = 3000 } = process.env;
 // mongodb
 mongoose.connect("mongodb://localhost:27017/mestodb");
-// cookie
-app.use(cookieParser());
-// body-parser
-app.use(express.json());
 // use routes
 app.use(routes);
 // create & login
