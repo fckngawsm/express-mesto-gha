@@ -1,8 +1,5 @@
-module.exports.sendError = (err, req, res, next) => {
+module.exports.errorHandler = (err, req, res, next) => {
   const { statusCode = 500, message } = err;
-
-  res.status(statusCode).send({
-    message: statusCode === 500 ? "На сервере произошла ошибка11" : message,
-  });
+  res.status(statusCode).send({ message: statusCode === 500 ? 'Internal Server Error' : message });
   next();
 };

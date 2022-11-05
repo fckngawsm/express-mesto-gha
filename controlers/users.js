@@ -4,14 +4,10 @@ const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 // err
 const UnauthorizedError = require('../errors/unauthorized-err');
-const BadRequest = require('../errors/bad-request-err');
+const BadRequestError = require('../errors/bad-request-err');
 const NotFound = require('../errors/not-found-err');
 const InternalServer = require('../errors/internal-server-err');
 const ConflictError  = require('../errors/conflict-error');
-
-
-module.exports = ConflictError;
-// const user = require('../models/user');
 // log all users
 const getUsers = (req, res, next) => {
   Users.find({})
@@ -50,11 +46,11 @@ const createUser = (req, res, next) => {
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Ошибка валидации'));
+      }
       if (err.code === 11000) {
         return next(new ConflictError('Почта уже зарегестрирована'));
-      }
-      if (err.name === 'ValidationError') {
-        return new BadRequest('Ошибка валидации');
       }
     })
     .catch(next);

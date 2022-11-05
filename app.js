@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const routes = require('./routes');
 const { loginUser, createUser } = require('./controlers/users');
 const { celebrateSignin, celebrateSignup } = require('./utils/celebrate');
-const {sendError} = require("./middlewares/sendErr")
+const {errorHandler} = require("./middlewares/sendErr");
 const app = express();
 // body-parser
 app.use(express.json());
@@ -32,8 +32,7 @@ app.use('/*', (req, res) => {
   res.status(404).send({ message: 'Ничего не нашлось' });
 });
 // middlewares with err
-app.use(sendError);
-// app.use(errors());
+app.use(errorHandler);
 // check npm run
 app.listen(PORT, () => {
   console.log(`приложение запущено на ${PORT} порту`);
