@@ -1,35 +1,35 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const routes = require("./routes");
-const app = express();
+const express = require('express');
+const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const { loginUser , createUser} = require("./controlers/users");
-// celebrate
-const {celebrateSignin , celebrateSignup } = require("./utils/celebrate");
+const routes = require('./routes');
+const { loginUser, createUser } = require('./controlers/users');
+const { celebrateSignin, celebrateSignup } = require('./utils/celebrate');
+
+const app = express();
 // body-parser
 app.use(express.json());
 // cookie
 app.use(cookieParser());
+// use routes
+app.use(routes);
 // launch app
 const { PORT = 3000 } = process.env;
 // mongodb
-mongoose.connect("mongodb://localhost:27017/mestodb");
-// use routes
-app.use(routes);
+mongoose.connect('mongodb://localhost:27017/mestodb');
 // create & login
 app.post(
-  "/signup",
+  '/signup',
   celebrateSignup,
-  createUser
+  createUser,
 );
 app.post(
-  "/signin",
+  '/signin',
   celebrateSignin,
   loginUser,
 );
 // wrong path
-app.use("/*", (req, res) => {
-  res.status(404).send({ message: "Ничего не нашлось" });
+app.use('/*', (req, res) => {
+  res.status(404).send({ message: 'Ничего не нашлось' });
 });
 // check npm run
 app.listen(PORT, () => {
