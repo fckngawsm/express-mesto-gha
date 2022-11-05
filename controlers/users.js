@@ -1,13 +1,13 @@
-const { mongoose } = require('mongoose');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const Users = require('../models/user');
+const { mongoose } = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const Users = require("../models/user");
 // err
-const UnauthorizedError = require('../errors/unauthorized-err');
-const BadRequestError = require('../errors/bad-request-err');
-const NotFound = require('../errors/not-found-err');
-const InternalServer = require('../errors/internal-server-err');
-const ConflictError  = require('../errors/conflict-error');
+const UnauthorizedError = require("../errors/unauthorized-err");
+const BadRequestError = require("../errors/bad-request-err");
+const NotFound = require("../errors/not-found-err");
+const InternalServer = require("../errors/internal-server-err");
+const ConflictError = require("../errors/conflict-error");
 // log all users
 const getUsers = (req, res, next) => {
   Users.find({})
@@ -19,7 +19,7 @@ const getUsersByID = (req, res, next) => {
   Users.findById(req.params.id)
     .then((user) => {
       if (user === null) {
-        next (new NotFound(`Нет пользователя с id ${req.params.id}`));
+        next(new NotFound(`Нет пользователя с id ${req.params.id}`));
       }
       return res.send({ data: user });
     })
@@ -32,25 +32,34 @@ const getUsersByID = (req, res, next) => {
 };
 // create users
 const createUser = (req, res, next) => {
-  const {
-    name, about, avatar, password, email,
-  } = req.body;
+  const { name, about, avatar, password, email } = req.body;
   bcrypt
     .hash(password, 10)
-    .then((hash) => Users.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => res.send({ data: user }))
+    .then((hash) =>
+      Users.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+    )
+    .then((user) =>
+      res.send({
+        data: {
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        },
+      })
+    )
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Ошибка валидации'));
+      if (err.name === "ValidationError") {
+        next(new BadRequestError("Ошибка валидации"));
       }
-      if (err.name === 'MongoError' || err.code === 11000) {
-        next(new ConflictError('Почта уже зарегестрирована'));
+      if (err.name === "MongoError" || err.code === 11000) {
+        next(new ConflictError("Почта уже зарегестрирована"));
       }
     })
     .catch(next);
@@ -63,12 +72,12 @@ const updateUsers = (req, res, next) => {
   Users.findByIdAndUpdate(
     id,
     { name, about },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest('Ошибка валидации');
+        throw new BadRequest("Ошибка валидации");
       }
     })
     .catch(next);
@@ -83,7 +92,7 @@ const updateUsersAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Ошибка валидации'));
+        next(new BadRequestError("Ошибка валидации"));
       }
     })
     .catch(next);
@@ -93,17 +102,19 @@ const loginUser = (req, res, next) => {
   const { email, password } = req.body;
   return Users.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', {
-        expiresIn: '7d',
-      });
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        })
-        .send({ message: 'Авторизация прошла успешно!' });
+      if (user || email) {
+        const token = jwt.sign({ _id: user._id }, "secret-key", {
+          expiresIn: "7d",
+        });
+        res
+          .cookie("jwt", token, {
+            maxAge: 3600000 * 24 * 7,
+            httpOnly: true,
+          })
+          .send({ message: "Авторизация прошла успешно!" });
+      }
     })
-    .catch(() => next(new BadRequestError('Неправильный email или пароль')));
+    .catch(() => next(new BadRequestError("Неправильный email или пароль")));
 };
 // log current users
 const getCurrentUser = (req, res, next) => {
@@ -111,7 +122,7 @@ const getCurrentUser = (req, res, next) => {
     .orFail()
     .then((currentUser) => res.send({ currentUser }))
     .catch(() => {
-      throw new NotFound('Пользователь с таким id не найден');
+      throw new NotFound("Пользователь с таким id не найден");
     })
     .catch(next);
 };
