@@ -1,11 +1,12 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
-const routes = require('./routes');
-const { loginUser, createUser } = require('./controlers/users');
-const { celebrateSignin, celebrateSignup } = require('./utils/celebrate');
-const {errorHandler} = require("./middlewares/sendErr");
+const express = require("express");
+const mongoose = require("mongoose");
+const routes = require("./routes");
 const app = express();
+const sendErr = require("./middlewares/sendErr")
+const cookieParser = require('cookie-parser');
+const { loginUser , createUser} = require("./controlers/users");
+// celebrate
+const {celebrateSignin , celebrateSignup } = require("./utils/celebrate");
 // body-parser
 app.use(express.json());
 // cookie
@@ -13,26 +14,25 @@ app.use(cookieParser());
 // launch app
 const { PORT = 3000 } = process.env;
 // mongodb
-mongoose.connect('mongodb://localhost:27017/mestodb');
+mongoose.connect("mongodb://localhost:27017/mestodb");
 // use routes
 app.use(routes);
 // create & login
 app.post(
-  '/signup',
+  "/signup",
   celebrateSignup,
-  createUser,
+  createUser
 );
 app.post(
-  '/signin',
+  "/signin",
   celebrateSignin,
   loginUser,
 );
 // wrong path
-app.use('/*', (req, res) => {
-  res.status(404).send({ message: 'Ничего не нашлось' });
+app.use("/*", (req, res) => {
+  res.status(404).send({ message: "Ничего не нашлось" });
 });
-// middlewares with err
-app.use(errorHandler);
+app.use(sendErr)
 // check npm run
 app.listen(PORT, () => {
   console.log(`приложение запущено на ${PORT} порту`);

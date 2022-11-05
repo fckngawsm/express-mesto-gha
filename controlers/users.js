@@ -19,7 +19,7 @@ const getUsersByID = (req, res, next) => {
   Users.findById(req.params.id)
     .then((user) => {
       if (user === null) {
-        throw new NotFound(`Нет пользователя с id ${req.params.id}`);
+        next (new NotFound(`Нет пользователя с id ${req.params.id}`));
       }
       return res.send({ data: user });
     })
@@ -49,8 +49,8 @@ const createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Ошибка валидации'));
       }
-      if (err.code === 11000) {
-        return next(new ConflictError('Почта уже зарегестрирована'));
+      if (err.name === 'MongoError' || err.code === 11000) {
+        next(new ConflictError('Почта уже зарегестрирована'));
       }
     })
     .catch(next);
@@ -83,7 +83,7 @@ const updateUsersAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest('Ошибка валидации');
+        next(new BadRequestError('Ошибка валидации'));
       }
     })
     .catch(next);
