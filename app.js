@@ -4,6 +4,7 @@ const routes = require("./routes");
 const auth = require("./middlewares/auth");
 const app = express();
 const sendErr = require("./middlewares/sendErr")
+const { errors } = require("celebrate");
 const cookieParser = require('cookie-parser');
 const { loginUser , createUser} = require("./controlers/users");
 // celebrate
@@ -33,6 +34,7 @@ app.use('/',auth ,routes);
 app.use("/*", (req, res) => {
   res.status(404).send({ message: "Ничего не нашлось" });
 });
+app.use(errors())
 app.use(sendErr)
 // check npm run
 app.listen(PORT, () => {
