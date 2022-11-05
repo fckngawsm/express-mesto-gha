@@ -10,12 +10,12 @@ const app = express();
 app.use(express.json());
 // cookie
 app.use(cookieParser());
-// use routes
-app.use(routes);
 // launch app
 const { PORT = 3000 } = process.env;
 // mongodb
 mongoose.connect('mongodb://localhost:27017/mestodb');
+// use routes
+app.use(routes);
 // create & login
 app.post(
   '/signup',
@@ -32,7 +32,8 @@ app.use('/*', (req, res) => {
   res.status(404).send({ message: 'Ничего не нашлось' });
 });
 // middlewares with err
-app.use(sendError)
+app.use(sendError);
+// app.use(errors());
 // check npm run
 app.listen(PORT, () => {
   console.log(`приложение запущено на ${PORT} порту`);

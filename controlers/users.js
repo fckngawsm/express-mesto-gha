@@ -7,6 +7,10 @@ const UnauthorizedError = require('../errors/unauthorized-err');
 const BadRequest = require('../errors/bad-request-err');
 const NotFound = require('../errors/not-found-err');
 const InternalServer = require('../errors/internal-server-err');
+const ConflictError  = require('../errors/conflict-error');
+
+
+module.exports = ConflictError;
 // const user = require('../models/user');
 // log all users
 const getUsers = (req, res, next) => {
@@ -46,10 +50,12 @@ const createUser = (req, res, next) => {
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest('Ошибка валидации');
+      if (err.code === 11000) {
+        return next(new ConflictError('Почта уже зарегестрирована'));
       }
-      throw new InternalServer('Ошибка на сервере');
+      if (err.name === 'ValidationError') {
+        return new BadRequest('Ошибка валидации');
+      }
     })
     .catch(next);
 };
@@ -68,7 +74,6 @@ const updateUsers = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequest('Ошибка валидации');
       }
-      throw new InternalServer('Ошибка на сервере');
     })
     .catch(next);
 };
@@ -84,7 +89,6 @@ const updateUsersAvatar = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequest('Ошибка валидации');
       }
-      throw new InternalServer('Ошибка на сервере');
     })
     .catch(next);
 };
@@ -109,10 +113,10 @@ const loginUser = (req, res, next) => {
 const getCurrentUser = (req, res, next) => {
   Users.findById(req.user._id)
     .orFail()
+    .then((currentUser) => res.send({ currentUser }))
     .catch(() => {
       throw new NotFound('Пользователь с таким id не найден');
     })
-    .then((currentUser) => res.send({ currentUser }))
     .catch(next);
 };
 module.exports = {

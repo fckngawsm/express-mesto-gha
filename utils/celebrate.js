@@ -1,19 +1,20 @@
-const { celebrate, Joi  } = require("celebrate");
+const { celebrate, Joi } = require("celebrate");
 // // validate avatar regular
 // const reg = /^(http|https):\/\/(www\.)?([A-Za-z0-9\.\-]+)(((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/g;
-// create
+
+// login
 const celebrateSignin = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().required(),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
 });
-// login
+// create
 const celebrateSignup = celebrate({
   body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string(),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
@@ -42,7 +43,7 @@ module.exports = {
   celebrateSignin,
   celebrateSignup,
   celebrateGetUsersByID,
-  celebrateUsersAvatar ,
-  celebrateUpdateUsers ,
+  celebrateUsersAvatar,
+  celebrateUpdateUsers,
 };
 // сделать с помощью регулярного выражения pattern для ссылки
