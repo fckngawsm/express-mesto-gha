@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const routes = require("./routes");
+const auth = require("./middlewares/auth");
 const app = express();
 const sendErr = require("./middlewares/sendErr")
 const cookieParser = require('cookie-parser');
@@ -15,8 +16,6 @@ app.use(cookieParser());
 const { PORT = 3000 } = process.env;
 // mongodb
 mongoose.connect("mongodb://localhost:27017/mestodb");
-// use routes
-app.use(routes);
 // create & login
 app.post(
   "/signup",
@@ -28,6 +27,8 @@ app.post(
   celebrateSignin,
   loginUser,
 );
+// use routes
+app.use('/',auth ,routes);
 // wrong path
 app.use("/*", (req, res) => {
   res.status(404).send({ message: "Ничего не нашлось" });
