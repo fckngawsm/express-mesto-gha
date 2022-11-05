@@ -47,7 +47,7 @@ const createUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new NotFound('Ошибка валидации');
+        throw new BadRequest('Ошибка валидации');
       }
       throw new InternalServer('Ошибка на сервере');
     })
