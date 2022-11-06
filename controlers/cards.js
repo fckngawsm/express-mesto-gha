@@ -32,11 +32,11 @@ const deleteCards = (req, res, next) => {
     .catch(() => {
       next(new NotFound("Нет карточки с таким id"));
     })
+    .then((card) => res.send({ data: card }))
     .then((card) => {
-      if (card.owner.toString() === req.user.id) {
-       return res.send({ data: card })
+      if (card.owner.toString() !== req.params.id) {
+        next(new ForbiddenError("Недостаточно прав для выполнения операции"));
       }
-      next(new ForbiddenError("Недостаточно прав для выполнения операции"));
     })
     .catch(next);
 };
