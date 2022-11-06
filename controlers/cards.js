@@ -32,7 +32,7 @@ const deleteCards = (req, res , next) => {
         next(new ForbiddenError("Недостаточно прав для выполнения операции"));
       }
       if (card === null) {
-        next (new NotFound(`Нет карточки с id ${req.params.id}`));
+        next(new NotFound(`Нет карточки с id ${req.params.id}`));
       }
       return res.send({ data: card });
     })
