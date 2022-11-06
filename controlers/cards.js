@@ -28,15 +28,15 @@ const postCards = (req, res, next) => {
 // delete card by id
 const deleteCards = (req, res, next) => {
   Cards.findByIdAndDelete(req.params.id)
-    .orFail()
-    .catch(() => {
-      next(new NotFound("Нет карточки с таким id"));
-    })
-    .then((card) => {
-      if (card.owner.toString() === req.user.id) {
-        return res.send({ data: card });
+    .orFail(new Error("Not found"))
+    .then((card) => res.send({ data: card }))
+    .catch((card) => {
+      if (err.message === "Not found") {
+        next (new NotFound(`Нет карточки с id ${req.params.id}`));
       }
-      next(new ForbiddenError("Недостаточно прав для выполнения операции"));
+      if (card.owner.toString() !== req.user.id) {
+        next(new ForbiddenError("Недостаточно прав для выполнения операции"));
+      }
     })
     .catch(next);
 };
