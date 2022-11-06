@@ -14,8 +14,8 @@ const cardSchema = new mongoose.Schema(
       type: String,
       required: true,
       validate: {
-        validator: (link) => validator.isEmail(link),
-        message: 'Невалидный email',
+        validator: (link) => validator.isUrl(link),
+        message: 'Невалидная сыылка',
       },
     },
     owner: {

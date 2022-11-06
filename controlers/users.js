@@ -27,8 +27,8 @@ const getUsersByID = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         throw new NotFound(`Нет пользователя с id ${req.params.id}`);
       }
-      return next(err);
-    });
+    })
+    .catch(next);
 };
 // create users
 const createUser = (req, res, next) => {
@@ -113,6 +113,7 @@ const loginUser = (req, res, next) => {
           })
           .send({ message: "Авторизация прошла успешно!" });
       }
+      next(new UnauthorizedError("Неправильный email или пароль"))
     })
     .catch(() => next(new BadRequestError("Неправильный email или пароль")));
 };

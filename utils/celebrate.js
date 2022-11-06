@@ -1,6 +1,12 @@
-const { celebrate, Joi } = require("celebrate");
+const { celebrate, Joi , CelebrateError } = require("celebrate");
 // // validate avatar regular
 // const reg = /^(http|https):\/\/(www\.)?([A-Za-z0-9\.\-]+)(((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/g;
+const validateLinkCards = (value) => {
+  if (!validator.isURL(value)) {
+    throw new CelebrateError('Некорректный URL');
+  }
+  return value;
+};
 
 // login
 const celebrateSignin = celebrate({
@@ -39,11 +45,26 @@ const celebrateUpdateUsers = celebrate({
     avatar: Joi.string().pattern(/^(http|https):\/\/(www\.)?([A-Za-z0-9\.\-]+)(((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/i),
   }),
 });
+
+// cards
+const celebrateCreateCards = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().custom(validateLinkCards).required(),
+  }),
+})
+const celebrateValidateId = celebrate({
+  params: Joi.object().keys({
+    _id: Joi.string().alphanum().length(24).hex(),
+  }),
+});
 module.exports = {
   celebrateSignin,
   celebrateSignup,
   celebrateGetUsersByID,
   celebrateUsersAvatar,
   celebrateUpdateUsers,
+  celebrateCreateCards,
+  celebrateValidateId
 };
 // сделать с помощью регулярного выражения pattern для ссылки
