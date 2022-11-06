@@ -34,7 +34,7 @@ const deleteCards = (req, res, next) => {
     })
     .then((card) => {
       if (card.owner.toString() === req.user.id) {
-        res.send({ data: card })
+       return res.send({ data: card })
       }
       next(new ForbiddenError("Недостаточно прав для выполнения операции"));
     })
