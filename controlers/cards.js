@@ -27,10 +27,13 @@ const postCards = (req, res, next) => {
 // delete card by id
 const deleteCards = (req, res, next) => {
   Cards.findByIdAndRemove(req.params.id)
-    .orFail(() => {
-      throw new NotFound("Карточка с указанным _id не найдена");
-    })
+    // .orFail(() => {
+    //   throw new NotFound("Карточка с указанным _id не найдена");
+    // })
     .then((card) => {
+      if (card === null) {
+        next(new NotFound("Карточка с указанным _id не найдена"));
+      }
       if (card.owner.toString() !== req.user._id) {
         next(new ForbiddenError("Недостаточно прав для выполнения операции"));
       }
@@ -38,7 +41,7 @@ const deleteCards = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new NotFound(`Некорректно указан id ${req.params.id}`);
+        next(new NotFound(`Некорректно указан id ${req.params.id}`));
       }
     })
     .catch(next);
