@@ -6,7 +6,7 @@ const { celebrate, Joi , CelebrateError } = require("celebrate");
 const celebrateCreateCards = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().pattern(/[a-f0-9]/).required(),
+    link: Joi.string().pattern(/^(http|https):\/\/(www\.)?([A-Za-z0-9\.\-]+)(((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/i).required(),
   }),
 })
 // cards id
