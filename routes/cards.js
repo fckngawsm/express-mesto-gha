@@ -10,7 +10,6 @@ const {
   likeCard,
   dislikeCard,
 } = require("../controlers/cards");
-
 router.get("/", getCards);
 router.post("/", celebrateCreateCards, postCards);
 router.delete("/:id",celebrateValidateId, deleteCards);

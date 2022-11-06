@@ -6,7 +6,6 @@ const Users = require("../models/user");
 const UnauthorizedError = require("../errors/unauthorized-err");
 const BadRequestError = require("../errors/bad-request-err");
 const NotFound = require("../errors/not-found-err");
-const InternalServer = require("../errors/internal-server-err");
 const ConflictError = require("../errors/conflict-error");
 // log all users
 const getUsers = (req, res, next) => {

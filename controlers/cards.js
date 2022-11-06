@@ -1,5 +1,9 @@
 const { mongoose } = require("mongoose");
 const Cards = require("../models/card");
+// err
+const BadRequestError = require("../errors/bad-request-err");
+const NotFound = require("../errors/not-found-err");
+const ForbiddenError = require("../errors/forbidden-err");
 // log all cards
 const getCards = (req, res, next) => {
   Cards.find({})
@@ -26,10 +30,10 @@ const deleteCards = (req, res , next) => {
   Cards.findByIdAndRemove(req.params.id)
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        throw new BadRequestError("Недостаточно прав для выполнения операции");
+        next(new ForbiddenError("Недостаточно прав для выполнения операции"));
       }
       if (card === null) {
-        throw new NotFound(`Нет карточки с id ${req.params.id}`);
+        next (new NotFound(`Нет карточки с id ${req.params.id}`));
       }
       return res.send({ data: card });
     })
