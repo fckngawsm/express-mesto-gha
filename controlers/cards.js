@@ -26,12 +26,12 @@ const postCards = (req, res, next) => {
     .catch(next);
 };
 // delete card by id
-const deleteCard = (req, res, next) => {
+const deleteCards = (req, res, next) => {
   const { cardId } = req.params;
 
   return Cards.findById(cardId)
     .orFail(() => {
-      throw new NotFound('Карточка с указанным _id не найдена');
+      throw new NotFound('Карточка с указанным id не найдена');
     })
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
