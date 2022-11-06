@@ -16,7 +16,7 @@ const postCards = (req, res, next) => {
   const id = req.user._id;
   const { name, link } = req.body;
 
-  Cards.create({ name, link, owner: id })
+  Cards.create({ name, link, owner: req.user._id  })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -33,7 +33,7 @@ const deleteCards = (req, res, next) => {
       throw new NotFound( 'Нет карточки с таким id' );
     })
     .then((card) => {
-      if (card.owner.toString() !== req.params.id) {
+      if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Недостаточно прав для выполнения операции' );
       }
       Cards.findByIdAndDelete(req.params.id)
