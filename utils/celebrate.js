@@ -62,4 +62,3 @@ module.exports = {
   celebrateCreateCards,
   celebrateValidateId
 };
-// сделать с помощью регулярного выражения pattern для ссылки

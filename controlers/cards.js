@@ -4,7 +4,6 @@ const Cards = require("../models/card");
 const BadRequestError = require("../errors/bad-request-err");
 const NotFound = require("../errors/not-found-err");
 const ForbiddenError = require("../errors/forbidden-err");
-const card = require("../models/card");
 // log all cards
 const getCards = (req, res, next) => {
   Cards.find({})
@@ -13,10 +12,9 @@ const getCards = (req, res, next) => {
 };
 // create card
 const postCards = (req, res, next) => {
-  const id = req.user._id;
   const { name, link } = req.body;
 
-  Cards.create({ name, link, owner: req.user._id  })
+  Cards.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -30,11 +28,11 @@ const deleteCards = (req, res, next) => {
   Cards.findById(req.params.id)
     .orFail()
     .catch(() => {
-      throw new NotFound( 'Нет карточки с таким id' );
+      throw new NotFound("Нет карточки с таким id");
     })
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError('Недостаточно прав для выполнения операции' );
+        throw new ForbiddenError("Недостаточно прав для выполнения операции");
       }
       Cards.findByIdAndDelete(req.params.id)
         .then((cardData) => {

@@ -40,5 +40,3 @@ app.use(sendErr)
 app.listen(PORT, () => {
   console.log(`приложение запущено на ${PORT} порту`);
 });
-// сделать все тоже самое для cards
-// пройти все тест

@@ -113,7 +113,9 @@ const loginUser = (req, res, next) => {
           .send({ message: "Авторизация прошла успешно!" });
       }
     })
-    .catch(() => next(new UnauthorizedError("Такого логина или пароля не существует!")));
+    .catch(() =>
+      next(new UnauthorizedError("Такого логина или пароля не существует!"))
+    );
 };
 // log current users
 const getCurrentUser = (req, res, next) => {
