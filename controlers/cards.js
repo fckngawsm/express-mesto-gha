@@ -34,7 +34,7 @@ const deleteCards = (req, res, next) => {
       if (card === null) {
         next(new NotFound("Карточка с указанным _id не найдена"));
       }
-      if (card.owner.toString() !== req.user._id) {
+      if (card.owner.toString() !== req.params.id) {
         next(new ForbiddenError("Недостаточно прав для выполнения операции"));
       }
       return res.send({ data: card });
