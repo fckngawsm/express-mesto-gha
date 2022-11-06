@@ -4,6 +4,7 @@ const Cards = require("../models/card");
 const BadRequestError = require("../errors/bad-request-err");
 const NotFound = require("../errors/not-found-err");
 const ForbiddenError = require("../errors/forbidden-err");
+const card = require("../models/card");
 // log all cards
 const getCards = (req, res, next) => {
   Cards.find({})
@@ -25,23 +26,18 @@ const postCards = (req, res, next) => {
     .catch(next);
 };
 // delete card by id
-const deleteCards = (req, res, next) => {
-  Cards.findByIdAndRemove(req.params.id)
-    // .orFail(() => {
-    //   throw new NotFound("Карточка с указанным _id не найдена");
-    // })
-    .then((card) => {
-      if (card === null) {
-        next(new NotFound("Карточка с указанным _id не найдена"));
-      }
-      if (card.owner.toString() !== req.params.id) {
-        next(new ForbiddenError("Недостаточно прав для выполнения операции"));
-      }
-      return res.send({ data: card });
+const deleteCard = (req, res, next) => {
+  const { cardId } = req.params;
+
+  return Cards.findById(cardId)
+    .orFail(() => {
+      throw new NotFound('Карточка с указанным _id не найдена');
     })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        next(new NotFound(`Некорректно указан id ${req.params.id}`));
+    .then((card) => {
+      if (card.owner.toString() === req.user._id) {
+        Cards.findByIdAndRemove(cardId).then(() => res.status(200).send(card));
+      } else {
+        throw new ForbiddenError('Это чужая карточка!');
       }
     })
     .catch(next);
