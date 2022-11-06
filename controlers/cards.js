@@ -33,7 +33,7 @@ const deleteCards = (req, res, next) => {
       throw new NotFound( 'Нет карточки с таким id' );
     })
     .then((card) => {
-      if (card.owner.toString() !== req.user.id) {
+      if (card.owner.toString() !== req.params.id) {
         throw new ForbiddenError('Недостаточно прав для выполнения операции' );
       }
       Cards.findByIdAndDelete(req.params.id)
