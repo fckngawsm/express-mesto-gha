@@ -21,7 +21,6 @@ const postCards = (req, res , next) => {
       if (err.name === "ValidationError") {
         next(new BadRequestError("Ошибка валидации"));
       }
-      send({ message: "На сервере произошла ошибка" });
     })
     .catch(next);
 };

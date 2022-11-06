@@ -1,13 +1,20 @@
 const { celebrate, Joi , CelebrateError } = require("celebrate");
+
 // // validate avatar regular
 // const reg = /^(http|https):\/\/(www\.)?([A-Za-z0-9\.\-]+)(((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/g;
-const validateLinkCards = (value) => {
-  if (!validator.isURL(value)) {
-    throw new CelebrateError('Некорректный URL');
-  }
-  return value;
-};
-
+// cards
+const celebrateCreateCards = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().pattern(/[a-f0-9]/).required(),
+  }),
+})
+// cards id
+const celebrateValidateId = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24).hex(),
+  }),
+});
 // login
 const celebrateSignin = celebrate({
   body: Joi.object().keys({
@@ -46,18 +53,6 @@ const celebrateUpdateUsers = celebrate({
   }),
 });
 
-// cards
-const celebrateCreateCards = celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().custom(validateLinkCards).required(),
-  }),
-})
-const celebrateValidateId = celebrate({
-  params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24).hex(),
-  }),
-});
 module.exports = {
   celebrateSignin,
   celebrateSignup,

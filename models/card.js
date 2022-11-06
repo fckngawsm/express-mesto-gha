@@ -5,7 +5,6 @@ const cardSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       minlength: 2,
       maxlength: 30,
       default: 'картинка',
@@ -14,8 +13,8 @@ const cardSchema = new mongoose.Schema(
       type: String,
       required: true,
       validate: {
-        validator: (link) => validator.isUrl(link),
-        message: 'Невалидная сыылка',
+        validator: (link) => /^(http|https):\/\/(www\.)?([A-Za-z0-9\.\-]+)(((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/g.test(link),
+        message: 'Невалидная ссылка',
       },
     },
     owner: {
