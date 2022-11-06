@@ -1,4 +1,4 @@
-const { celebrate, Joi , CelebrateError } = require("celebrate");
+const { celebrate, Joi  } = require("celebrate");
 
 // // validate avatar regular
 // const reg = /^(http|https):\/\/(www\.)?([A-Za-z0-9\.\-]+)(((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/g;
@@ -12,7 +12,7 @@ const celebrateCreateCards = celebrate({
 // cards id
 const celebrateValidateId = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24).hex(),
+    id: Joi.string().required().hex().length(24),
   }),
 });
 // login

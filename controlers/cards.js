@@ -11,7 +11,7 @@ const getCards = (req, res, next) => {
     .catch(next);
 };
 // create card
-const postCards = (req, res , next) => {
+const postCards = (req, res, next) => {
   const id = req.user._id;
   const { name, link } = req.body;
 
@@ -25,14 +25,14 @@ const postCards = (req, res , next) => {
     .catch(next);
 };
 // delete card by id
-const deleteCards = (req, res , next) => {
+const deleteCards = (req, res, next) => {
   Cards.findByIdAndRemove(req.params.id)
+    .orFail(() => {
+      throw new NotFound("Карточка с указанным _id не найдена");
+    })
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         next(new ForbiddenError("Недостаточно прав для выполнения операции"));
-      }
-      if (card === null) {
-        next(new NotFound(`Нет карточки с id ${req.params.id}`));
       }
       return res.send({ data: card });
     })
@@ -44,7 +44,7 @@ const deleteCards = (req, res , next) => {
     .catch(next);
 };
 // like card
-const likeCard = (req, res , next) => {
+const likeCard = (req, res, next) => {
   Cards.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } },
@@ -63,7 +63,7 @@ const likeCard = (req, res , next) => {
     .catch(next);
 };
 // dislike card
-const dislikeCard = (req, res , next) => {
+const dislikeCard = (req, res, next) => {
   Cards.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } },
