@@ -32,8 +32,8 @@ const deleteCards = (req, res, next) => {
       if (card === null) {
         next(new NotFound("Карточка с указанным id не найдена"));
       }
-      if (card.owner.toString() !== req.params.id) {
-        next(new ForbiddenError("Недостаточно прав для выполнения операции"));
+      if (!card.owner.equals(req.user._id)) {
+        throw new ForbiddenError('You are not allowed to remove posts of other users');
       }
       return res.send({ data: card });
     })
