@@ -26,24 +26,28 @@ const postCards = (req, res, next) => {
     .catch(next);
 };
 // delete card by id
-const deleteCards = (req, res, next) => {
-  Cards.findByIdAndRemove(req.params.id)
+const deleteCards = (req, res, next) =>
+  Cards.findById(req.params.id)
     .then((card) => {
-      if (card === null) {
-        next(new NotFound("Карточка с указанным id не найдена"));
+      if (!card) {
+        throw new NotFound("Карточка не найдена");
       }
-      if (card.owner.toString() !== req.params.id) {
-        next(new ForbiddenError("Недостаточно прав для выполнения операции"));
+      if (JSON.stringify(card.owner) === JSON.stringify(req.params.id)) {
+        return Cards.findByIdAndRemove(req.params.id).then((data) =>
+          res.send(data)
+        );
       }
-      return res.send({ data: card });
+      throw new ForbiddenError(
+        "Вы не можете удалить карточку другого пользователя"
+      );
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        next(new NotFound(`Некорректно указан id ${req.params.id}`));
+      if (err.message === "Not found") {
+        throw new NotFound(`Нет карточки с id ${req.params.id}`);
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
-};
+    });
 // like card
 const likeCard = (req, res, next) => {
   Cards.findByIdAndUpdate(
