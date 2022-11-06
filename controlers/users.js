@@ -112,9 +112,8 @@ const loginUser = (req, res, next) => {
           })
           .send({ message: "Авторизация прошла успешно!" });
       }
-      next(new UnauthorizedError("Неправильный email или пароль"))
     })
-    .catch(() => next(new BadRequestError("Неправильный email или пароль")));
+    .catch(() => next(new UnauthorizedError("Такого логина или пароля не существует!")));
 };
 // log current users
 const getCurrentUser = (req, res, next) => {
