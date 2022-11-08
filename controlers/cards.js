@@ -76,7 +76,7 @@ const dislikeCard = (req, res, next) => {
         next(new NotFound(`Нет карточки с id ${req.params.id}`));
       }
       if (err instanceof mongoose.Error.CastError) {
-        throw new NotFound(`Некорректно указан id ${req.params.id}`);
+        next(new NotFound(`Некорректно указан id ${req.params.id}`));
       }
       return next(err);
     });
