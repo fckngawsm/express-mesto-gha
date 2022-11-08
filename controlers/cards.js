@@ -54,7 +54,7 @@ const likeCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.message === 'Not found') {
-        return next(new BadRequestError(`Нет карточки с id ${req.params.id}`));
+        return next(new NotFound(`Нет карточки с id ${req.params.id}`));
       }
       if (err instanceof mongoose.Error.CastError) {
         return next(new NotFound(`Нет карточки с id ${req.params.id}`));
