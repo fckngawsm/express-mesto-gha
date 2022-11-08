@@ -98,23 +98,57 @@ const updateUsersAvatar = (req, res, next) => {
 // login user
 const loginUser = (req, res, next) => {
   const { email, password } = req.body;
-  return Users.findUserByCredentials(email, password)
+  if (!email || !password) {
+    throw new BadRequestError('Не передан email или пароль');
+  }
+  Users.findOne({ email })
+    .select('+password')
     .then((user) => {
-      if (!user || !email) {
-        throw new UnauthorizedError('Incorrect email or password');
+      if (!user) {
+        throw new UnauthorizedError('Неправильные почта или пароль');
       }
-      const token = jwt.sign({ _id: user._id }, 'secret-key', {
-        expiresIn: '7d',
-      });
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
+      bcrypt
+        .compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new UnauthorizedError('Неправильные почта или пароль');
+          }
+          const token = jwt.sign({ _id: user._id }, 'secret-key', {
+            expiresIn: '7d',
+          });
+          res
+            .cookie('jwt', token, {
+              maxAge: 3600000 * 24 * 7,
+              httpOnly: true,
+            })
+            .send({ message: 'Авторизация прошла успешно!' });
         })
-        .send({ message: 'Авторизация прошла успешно!' });
+        .catch(next);
     })
     .catch(next);
 };
+// const loginUser = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user = await Users.findOne({ email }).select('+password');
+//     if (!user) {
+//       next(new BadRequestError('Неправильные почта или пароль'));
+//       return;
+//     }
+//     const matched = bcrypt.compare(password, user.password);
+//     if (!matched) {
+//       next(new BadRequestError('Неправильные почта или пароль'));
+//       return;
+//     }
+//     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
+//     res.status(200).cookie('jwt', token, {
+//       maxAge: 3600000 * 24 * 7,
+//       httpOnly: true,
+//     }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 // log current users
 const getCurrentUser = (req, res, next) => {
   Users.findById(req.user._id)
