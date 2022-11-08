@@ -6,7 +6,7 @@ const Users = require('../models/user');
 const BadRequestError = require('../errors/bad-request-err');
 const NotFound = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-error');
-// const UnauthorizedError = require('../errors/unauthorized-err');
+const UnauthorizedError = require('../errors/unauthorized-err');
 // log all users
 const getUsers = (req, res, next) => {
   Users.find({})
@@ -48,10 +48,10 @@ const createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Ошибка валидации'));
+        next(new BadRequestError('Ошибка валидации'));
       }
       if (err.name === 'MongoError' || err.code === 11000) {
-        return next(new ConflictError('Почта уже зарегестрирована'));
+        next(new ConflictError('Почта уже зарегестрирована'));
       }
       return next(err);
     });
@@ -94,17 +94,20 @@ const loginUser = (req, res, next) => {
   const { email, password } = req.body;
   return Users.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', {
-        expiresIn: '7d',
-      });
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        })
-        .send({ message: 'Авторизация прошла успешно!' });
+      if (user || email) {
+        const token = jwt.sign({ _id: user._id }, 'secret-key', {
+          expiresIn: '7d',
+        });
+        res
+          .cookie('jwt', token, {
+            maxAge: 3600000 * 24 * 7,
+            httpOnly: true,
+          })
+          .send({ message: 'Авторизация прошла успешно!' });
+      }
     })
-    .catch(next);
+
+    .catch(() => next(new UnauthorizedError('Такого логина или пароля не существует!')));
 };
 // log current users
 const getCurrentUser = (req, res, next) => {
