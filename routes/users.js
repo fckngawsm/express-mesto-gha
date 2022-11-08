@@ -1,31 +1,32 @@
-const router = require("express").Router();
+const router = require('express').Router();
 const {
-  celebrateGetUsersByID,
-  celebrateUsersAvatar ,
-  celebrateUpdateUsers
-} = require("../utils/celebrate")
+  celebrateValidateId,
+  celebrateUsersAvatar,
+  celebrateUpdateUsers,
+} = require('../utils/celebrate');
 const {
   getUsers,
   getUsersByID,
   updateUsers,
   updateUsersAvatar,
   getCurrentUser,
-} = require("../controlers/users");
-router.get("/", getUsers);
-router.get("/me", getCurrentUser);
+} = require('../controlers/users');
+
+router.get('/', getUsers);
+router.get('/me', getCurrentUser);
 router.get(
-  "/:id",
-  celebrateGetUsersByID,
-  getUsersByID
+  '/:id',
+  celebrateValidateId,
+  getUsersByID,
 );
 router.patch(
-  "/me/avatar",
+  '/me/avatar',
   celebrateUsersAvatar,
-  updateUsersAvatar
+  updateUsersAvatar,
 );
 router.patch(
-  "/me",
+  '/me',
   celebrateUpdateUsers,
-  updateUsers
+  updateUsers,
 );
 module.exports = router;

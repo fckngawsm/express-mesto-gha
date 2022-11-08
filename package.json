@@ -2,9 +2,8 @@
   "name": "express-mesto-gha",
   "version": "1.0.0",
   "description": "Проект Mesto фронтенд + бэкенд",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint .",
     "start": "node app.js",
     "dev": "nodemon app.js"
@@ -27,13 +26,11 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.1",
     "celebrate": "^15.0.1",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.5",
-    "run": "^1.4.0",
     "validator": "^13.7.0"
   }
 }

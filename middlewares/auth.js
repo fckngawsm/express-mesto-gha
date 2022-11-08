@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorized-err');
+
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
   let payload;
@@ -9,5 +10,5 @@ module.exports = (req, res, next) => {
     next(new UnauthorizedError('Необходима авторизация'));
   }
   req.user = payload;
-  next();
+  return next();
 };
