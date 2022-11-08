@@ -6,6 +6,7 @@ const Users = require('../models/user');
 const BadRequestError = require('../errors/bad-request-err');
 const NotFound = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-error');
+const UnauthorizedError = require('../errors/unauthorized-err');
 // log all users
 const getUsers = (req, res, next) => {
   Users.find({})
@@ -104,6 +105,7 @@ const loginUser = (req, res, next) => {
           })
           .send({ message: 'Авторизация прошла успешно!' });
       }
+      throw new UnauthorizedError('Данных не существует!');
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -115,8 +117,12 @@ const loginUser = (req, res, next) => {
 // log current users
 const getCurrentUser = (req, res, next) => {
   Users.findById(req.user._id)
-    .orFail()
-    .then((currentUser) => res.send({ currentUser }))
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Передан некорретный Id'));
