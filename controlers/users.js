@@ -100,7 +100,7 @@ const loginUser = (req, res, next) => {
   const { email, password } = req.body;
   return Users.findUserByCredentials(email, password)
     .then((user) => {
-      if (user === null) {
+      if (!user || !email) {
         throw new UnauthorizedError('Incorrect email or password');
       }
       const token = jwt.sign({ _id: user._id }, 'secret-key', {
