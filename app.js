@@ -4,6 +4,7 @@ const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const routes = require('./routes');
 const auth = require('./middlewares/auth');
+const NotFound = require('./errors/not-found-err');
 
 const app = express();
 const sendErr = require('./middlewares/sendErr');
@@ -32,8 +33,8 @@ app.post(
 // use routes
 app.use('/', auth, routes);
 // wrong path
-app.use('/*', (req, res) => {
-  res.status(404).send({ message: 'Ничего не нашлось' });
+app.use('/*', (req, res, next) => {
+  next(new NotFound('Неправильный путь'));
 });
 app.use(errors());
 app.use(sendErr);
