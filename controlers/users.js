@@ -3,10 +3,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 // err
+const UnauthorizedError = require('../errors/unauthorized-err');
 const BadRequestError = require('../errors/bad-request-err');
 const NotFound = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-error');
-const UnauthorizedError = require('../errors/unauthorized-err');
 // log all users
 const getUsers = (req, res, next) => {
   Users.find({})
@@ -18,9 +18,14 @@ const getUsersByID = (req, res, next) => {
   Users.findById(req.params.id)
     .then((user) => {
       if (user === null) {
-        throw new NotFound('Нет пользователя с таким id');
+        next(new NotFound(`Нет пользователя с id ${req.params.id}`));
       }
       return res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        throw new NotFound(`Нет пользователя с id ${req.params.id}`);
+      }
     })
     .catch(next);
 };
@@ -53,8 +58,8 @@ const createUser = (req, res, next) => {
       if (err.name === 'MongoError' || err.code === 11000) {
         next(new ConflictError('Почта уже зарегестрирована'));
       }
-      return next(err);
-    });
+    })
+    .catch(next);
 };
 // update profile
 const updateUsers = (req, res, next) => {
@@ -69,10 +74,10 @@ const updateUsers = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return next(new BadRequestError('Ошибка валидации'));
+        throw new BadRequestError('Ошибка валидации');
       }
-      return next(err);
-    });
+    })
+    .catch(next);
 };
 // update avatar
 const updateUsersAvatar = (req, res, next) => {
@@ -84,10 +89,10 @@ const updateUsersAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return next(BadRequestError('Ошибка валидации'));
+        next(new BadRequestError('Ошибка валидации'));
       }
-      return next(err);
-    });
+    })
+    .catch(next);
 };
 // login user
 const loginUser = (req, res, next) => {
@@ -106,19 +111,17 @@ const loginUser = (req, res, next) => {
           .send({ message: 'Авторизация прошла успешно!' });
       }
     })
-
     .catch(() => next(new UnauthorizedError('Такого логина или пароля не существует!')));
 };
 // log current users
 const getCurrentUser = (req, res, next) => {
   Users.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFound('Пользователь не найден');
-      }
-      res.send({ data: user });
+    .orFail()
+    .then((currentUser) => res.send({ currentUser }))
+    .catch(() => {
+      throw new NotFound('Пользователь с таким id не найден');
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
 module.exports = {
   getUsers,
