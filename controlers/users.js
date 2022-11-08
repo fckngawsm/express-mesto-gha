@@ -70,8 +70,8 @@ const updateUsers = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequestError('Ошибка валидации');
       }
-    })
-    .catch(next);
+      return next(err);
+    });
 };
 // update avatar
 const updateUsersAvatar = (req, res, next) => {
@@ -83,10 +83,10 @@ const updateUsersAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequestError('Ошибка валидации');
+        return next(BadRequestError('Ошибка валидации'));
       }
-    })
-    .catch(next);
+      return next(err);
+    });
 };
 // login user
 const loginUser = (req, res, next) => {
@@ -107,12 +107,10 @@ const loginUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы не коректные данные'));
-        return;
+        return next(new BadRequestError('Переданы не коректные данные'));
       }
-      next(err);
-    })
-    .catch(next);
+      return next(err);
+    });
 };
 // log current users
 const getCurrentUser = (req, res, next) => {
@@ -121,12 +119,10 @@ const getCurrentUser = (req, res, next) => {
     .then((currentUser) => res.send({ currentUser }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Передан некорретный Id'));
-        return;
+        return next(new BadRequestError('Передан некорретный Id'));
       }
-      next(err);
-    })
-    .catch(next);
+      return next(err);
+    });
 };
 module.exports = {
   getUsers,
