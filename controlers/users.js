@@ -75,7 +75,7 @@ const updateUsers = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequestError('Ошибка валидации');
+        return next(new BadRequestError('Ошибка валидации'));
       }
       return next(err);
     });
