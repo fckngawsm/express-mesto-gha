@@ -18,11 +18,10 @@ const postCards = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Ошибка валидации'));
+        return next(new BadRequestError('Ошибка валидации'));
       }
       return next(err);
-    })
-    .catch(next);
+    });
 };
 // delete card by id
 const deleteCards = (req, res, next) => {
@@ -73,10 +72,10 @@ const dislikeCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.message === 'Not found') {
-        next(new NotFound(`Нет карточки с id ${req.params.id}`));
+        return next(new NotFound(`Нет карточки с id ${req.params.id}`));
       }
       if (err instanceof mongoose.Error.CastError) {
-        next(new NotFound(`Некорректно указан id ${req.params.id}`));
+        return next(new NotFound(`Некорректно указан id ${req.params.id}`));
       }
       return next(err);
     });
