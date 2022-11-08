@@ -127,28 +127,6 @@ const loginUser = (req, res, next) => {
     })
     .catch(next);
 };
-// const loginUser = async (req, res, next) => {
-//   try {
-//     const { email, password } = req.body;
-//     const user = await Users.findOne({ email }).select('+password');
-//     if (!user) {
-//       next(new BadRequestError('Неправильные почта или пароль'));
-//       return;
-//     }
-//     const matched = bcrypt.compare(password, user.password);
-//     if (!matched) {
-//       next(new BadRequestError('Неправильные почта или пароль'));
-//       return;
-//     }
-//     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
-//     res.status(200).cookie('jwt', token, {
-//       maxAge: 3600000 * 24 * 7,
-//       httpOnly: true,
-//     }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 // log current users
 const getCurrentUser = (req, res, next) => {
   Users.findById(req.user._id)
