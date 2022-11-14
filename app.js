@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const routes = require('./routes');
 const auth = require('./middlewares/auth');
 const NotFound = require('./errors/not-found-err');
+const { requestLogger, errorLogger } = require('./middlewares/loger');
 
 const app = express();
 const sendErr = require('./middlewares/sendErr');
@@ -19,6 +20,8 @@ app.use(cookieParser());
 const { PORT = 3000 } = process.env;
 // mongodb
 mongoose.connect('mongodb://localhost:27017/mestodb');
+// requestLogger
+app.use(requestLogger);
 // create & login
 app.post(
   '/signup',
@@ -36,6 +39,7 @@ app.use('/', auth, routes);
 app.use('/*', (req, res, next) => {
   next(new NotFound('Неправильный путь'));
 });
+app.use(errorLogger);
 app.use(errors());
 app.use(sendErr);
 // check npm run
