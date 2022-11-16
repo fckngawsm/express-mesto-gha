@@ -46,4 +46,3 @@ app.use(sendErr);
 app.listen(PORT, () => {
   console.log(`приложение запущено на ${PORT} порту`);
 });
-// sasa
